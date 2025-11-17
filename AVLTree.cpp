@@ -11,7 +11,7 @@ bool AVLTree::insert(const std::string& key, size_t value) { // insert key-value
     if (!root) { // if tree is empty
         root = newNode; // new node becomes root
     } else {
-        insertRecursive(root, newNode);
+        insertRecursive(root, newNode); // call recursive helper to insert node starting from root
     }
     return true; // insertion successful
 }
@@ -20,7 +20,7 @@ void AVLTree::insertRecursive(AVLNode* parent, AVLNode* nodeToInsert) { // recur
     if (nodeToInsert->key < parent->key) { // if key to insert is less than parent's key
         if (parent->left == nullptr) { // if left child is null
             parent->left = nodeToInsert; // insert as left child
-            nodeToInsert ->parent = parent; // set parent of inserted node for balancing
+            nodeToInsert->parent = parent; // set parent of inserted node for balancing
         } else {
             insertRecursive(parent->left, nodeToInsert); // parent is now left child, recursive call
         }
@@ -37,6 +37,7 @@ void AVLTree::insertRecursive(AVLNode* parent, AVLNode* nodeToInsert) { // recur
     balanceNode(parent); // balance the parent node
 }
 bool AVLTree::remove(const std::string& key) {
+    return remove(root, key); // call recursive remove starting from root to remove given key
 }
 bool AVLTree::contains(const std::string& key) const {
 }
@@ -60,13 +61,11 @@ void AVLTree::operator=(const AVLTree& other) {
 AVLTree::~AVLTree() {
 }
 size_t AVLTree::AVLNode::numChildren() const {
-    return 0;
 }
 bool AVLTree::AVLNode::isLeaf() const {
-    return false;
+    return left == nullptr && right == nullptr; // A node is a leaf if left and right children are null
 }
 size_t AVLTree::AVLNode::getHeight() const {
-    return 0;
 }
 bool AVLTree::removeNode(AVLNode*& current){
     if (!current) {
@@ -112,7 +111,16 @@ bool AVLTree::removeNode(AVLNode*& current){
     return true;
 }
 bool AVLTree::remove(AVLNode *&current, KeyType key) {
-    return false;
+    if (!current) { // base case: current is null
+        return false; // key not found
+    }
+    if (key < current->key) { // if key is less than current key
+        return remove(current->left, key); // changes current to left child, recursive call
+    } else if (key > current->key) { // if key is greater than current key
+            return remove(current->right, key); // changes current to right child, recursive call
+        } else {
+            return removeNode(current); // key found, remove node
+    }
 }
 void AVLTree::balanceNode(AVLNode *&node) {
 }

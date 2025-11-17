@@ -29,6 +29,9 @@ public:
     ~AVLTree();
     void operator=(const AVLTree& other);
 
+    //Recursive methods
+    void AVLTree::insertRecursive(AVLNode* parent, AVLNode nodeToInsert);
+
 
     friend std::ostream& operator<<(ostream& os, const AVLTree & avlTree);
 
@@ -51,7 +54,6 @@ protected:
         // number of hops to deepest leaf node
         size_t getHeight() const;
 
-
     };
 
 public:
@@ -70,6 +72,7 @@ public:
     // You will implement this, but it is needed for removeNode()
     void balanceNode(AVLNode*& node);
 
+    void insertRecursive(AVLNode* parent, AVLNode* nodeToInsert);
 };
 
 #endif //AVLTREE_H

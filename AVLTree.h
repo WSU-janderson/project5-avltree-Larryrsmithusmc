@@ -15,6 +15,7 @@ public:
     using KeyType = std::string;
     using ValueType = size_t;
 
+    AVLTree();
     bool insert(const std::string& key, size_t value);
     bool remove(const std::string& key);
     bool contains(const std::string& key) const;
@@ -25,7 +26,6 @@ public:
     size_t size() const;
     size_t getHeight() const;
     AVLTree(const AVLTree& other);
-    AVLTree();
     ~AVLTree();
     void operator=(const AVLTree& other);
 
@@ -60,7 +60,8 @@ public:
 
 
     private:
-    AVLNode *&root;
+    AVLNode* root;
+    size_t treeSize;
 
     /* Helper methods for remove */
     // this overloaded remove will do the recursion to remove the node
@@ -70,15 +71,19 @@ public:
     // You will implement this, but it is needed for removeNode()
     void balanceNode(AVLNode*& node);
 
-    bool contains(AVLNode*& current, KeyType key) const;
+    bool contains(AVLNode* current, KeyType key) const;
 
     void insertRecursive(AVLNode*& parent, AVLNode*& nodeToInsert);
 
-    std::optional<size_t> get(AVLNode*& current, KeyType key) const;
+    std::optional<size_t> get(AVLNode* current, KeyType Key) const;
 
     size_t& getValue(AVLNode*& current, KeyType key);
 
     void findKeysInRange(AVLNode* current, const std::string& lowKey, const std::string& highKey, vector<string>& keys);
+
+    void allKeys(AVLNode* current, vector<string>& keys) const;
+
+    void deleteTree(AVLNode* current);
 };
 
 #endif //AVLTREE_H

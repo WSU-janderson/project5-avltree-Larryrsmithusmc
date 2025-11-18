@@ -66,11 +66,11 @@ int main() {
 //    cout << endl;
 //
 //    // findRange
-//    vector<int> rangeTest = tree.findRange("D", "W");
+//    vector<string> rangeTest = tree.findRange("D", "W");
 //    // 70 68 82 75 77 86
-//    for (auto val: rangeTest) {
-//        cout << val << " ";
-//    }
+//    cout << "Keys in range D to W: ";
+//    for (const string& key : rangeTest) {
+//        cout << key << " ";
 //    cout << endl << endl;
 //
 //    // operator[]

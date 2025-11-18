@@ -46,8 +46,12 @@ std::optional<size_t> AVLTree::get(const std::string& key) const {
     return get(root, key); // call recursive get starting from root to retrieve value for key
 }
 size_t& AVLTree::operator[](const std::string& key) {
+    return getValue(root, key);
 }
-vector<std::string> AVLTree::findRange(const std::string& lowKey, const std::string& highKey) {
+vector<std::string> AVLTree::findRange(const std::string& lowKey, const std::string& highKey){
+    vector<string> keys; // vector to store keys in range
+    findKeysInRange(root, lowKey, highKey, keys); // call helper to find keys in range
+    return keys; // return vector of keys
 }
 std::vector<std::string> AVLTree::keys() const {
 }
@@ -151,6 +155,24 @@ std::optional<size_t> AVLTree::get(AVLNode*& current, KeyType key) const{
         return get(current->left, key); // go left, recursive call
     } else {
         return get(current->right, key); // go right, recursive call
+    }
+}
+size_t& AVLTree::getValue(AVLNode*& current, KeyType key) {
+    if (key == current->key) { // if key matches current key
+        return current->value; // return reference to value
+    }
+    if (key < current->key) { // if key is less than current key
+        return getValue(current->left, key); // go left, recursive call
+    } else {
+        return getValue(current->right, key); // go right, recursive call
+    }
+}
+void AVLTree::findKeysInRange(AVLNode* current, const std::string& lowKey, const std::string& highKey, vector<string>& keys){
+    if (!current) { // base case: current is null
+        return;
+    }
+    if (current->key >= lowKey && current->key <= highKey) { // if current key is within range
+        keys.push_back(current->key); // add key to vector
     }
 }
 // Replaced code parts

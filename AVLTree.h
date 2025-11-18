@@ -29,9 +29,6 @@ public:
     ~AVLTree();
     void operator=(const AVLTree& other);
 
-    //Recursive methods
-    void AVLTree::insertRecursive(AVLNode* parent, AVLNode nodeToInsert);
-
 
     friend std::ostream& operator<<(ostream& os, const AVLTree & avlTree);
 
@@ -45,6 +42,7 @@ protected:
         AVLNode* left;
         AVLNode* right;
         AVLNode* parent;
+
 
 
         // 0, 1 or 2
@@ -77,6 +75,10 @@ public:
     void insertRecursive(AVLNode*& parent, AVLNode*& nodeToInsert);
 
     std::optional<size_t> get(AVLNode*& current, KeyType key) const;
+
+    size_t& getValue(AVLNode*& current, KeyType key);
+
+    void findKeysInRange(AVLNode* current, const std::string& lowKey, const std::string& highKey, vector<string>& keys);
 };
 
 #endif //AVLTREE_H

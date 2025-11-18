@@ -16,7 +16,7 @@ bool AVLTree::insert(const std::string& key, size_t value) { // insert key-value
     return true; // insertion successful
 }
 
-void AVLTree::insertRecursive(AVLNode* parent, AVLNode* nodeToInsert) { // recursive helper to insert node
+void AVLTree::insertRecursive(AVLNode*& parent, AVLNode*& nodeToInsert) { // recursive helper to insert node
     if (nodeToInsert->key < parent->key) { // if key to insert is less than parent's key
         if (parent->left == nullptr) { // if left child is null
             parent->left = nodeToInsert; // insert as left child
@@ -43,6 +43,7 @@ bool AVLTree::contains(const std::string& key) const {
     return contains(root, key); // call recursive contains starting from root to check for key
 }
 std::optional<size_t> AVLTree::get(const std::string& key) const {
+    return get(root, key); // call recursive get starting from root to retrieve value for key
 }
 size_t& AVLTree::operator[](const std::string& key) {
 }
@@ -137,6 +138,19 @@ bool AVLTree::contains(AVLNode*& current, KeyType key) const{
         return contains(current->left, key); // go left, recursive call
     } else {
         return contains(current->right, key); // go right, recursive call
+    }
+}
+std::optional<size_t> AVLTree::get(AVLNode*& current, KeyType key) const{
+    if (!current) { // base case: current is null
+        return std::nullopt; // key not found
+    }
+    if (key == current->key) { // if key matches current key
+        return current->value; // return value
+    }
+    if (key < current->key) { // if key is less than current key
+        return get(current->left, key); // go left, recursive call
+    } else {
+        return get(current->right, key); // go right, recursive call
     }
 }
 // Replaced code parts

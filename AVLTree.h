@@ -74,7 +74,9 @@ public:
 
     bool contains(AVLNode*& current, KeyType key) const;
 
-    void insertRecursive(AVLNode* parent, AVLNode* nodeToInsert);
+    void insertRecursive(AVLNode*& parent, AVLNode*& nodeToInsert);
+
+    std::optional<size_t> get(AVLNode*& current, KeyType key) const;
 };
 
 #endif //AVLTREE_H

@@ -62,7 +62,7 @@ public:
 
 
     private:
-    AVLNode* root;
+    AVLNode *&root;
 
     /* Helper methods for remove */
     // this overloaded remove will do the recursion to remove the node
@@ -71,6 +71,8 @@ public:
     bool removeNode(AVLNode*& current);
     // You will implement this, but it is needed for removeNode()
     void balanceNode(AVLNode*& node);
+
+    bool contains(AVLNode*& current, KeyType key) const;
 
     void insertRecursive(AVLNode* parent, AVLNode* nodeToInsert);
 };

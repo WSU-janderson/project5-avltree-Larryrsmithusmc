@@ -40,6 +40,7 @@ bool AVLTree::remove(const std::string& key) {
     return remove(root, key); // call recursive remove starting from root to remove given key
 }
 bool AVLTree::contains(const std::string& key) const {
+    return contains(root, key); // call recursive contains starting from root to check for key
 }
 std::optional<size_t> AVLTree::get(const std::string& key) const {
 }
@@ -56,6 +57,7 @@ size_t AVLTree::getHeight() const {
 }
 AVLTree::AVLTree(const AVLTree& other) {
 }
+
 void AVLTree::operator=(const AVLTree& other) {
 }
 AVLTree::~AVLTree() {
@@ -86,7 +88,7 @@ bool AVLTree::removeNode(AVLNode*& current){
         }
     } else {
         // case 3 - we have two children,
-        // get smallest key in right subtree by
+        // get the smallest key in right subtree by
         // getting right child and go left until left is null
         AVLNode* smallestInRight = current->right;
         // I could check if smallestInRight is null,
@@ -124,7 +126,19 @@ bool AVLTree::remove(AVLNode *&current, KeyType key) {
 }
 void AVLTree::balanceNode(AVLNode *&node) {
 }
-
+bool AVLTree::contains(AVLNode*& current, KeyType key) const{
+    if (!current) { // base case: current is null
+        return false; // key not found
+    }
+    if (key == current->key) { // if key matches current key
+        return true; // key found
+    }
+    if (key < current->key) { // if key is less than current key
+        return contains(current->left, key); // go left, recursive call
+    } else {
+        return contains(current->right, key); // go right, recursive call
+    }
+}
 // Replaced code parts
 /*AVLNode* current = root; // pointer starting at the root
     AVLNode* parent = nullptr; // pointer to keep track of the parent node

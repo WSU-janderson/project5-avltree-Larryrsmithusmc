@@ -28,10 +28,12 @@ int main() {
     for (const string& key : keys) {
         cout << key << " ";
     }
-
+    cout << endl;
     tree.remove("B");
     cout << tree << endl;
-    cout << "hmm" << endl;
+    cout << tree.getHeight() << endl;
+    cout << tree.size() << endl;
+
     // bool insertResult;
     // insertResult = tree.insert("F", 'F');
     // insertResult = tree.insert("F", 'F'); // false, no duplicates allowed

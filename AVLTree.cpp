@@ -1,7 +1,13 @@
+/*
+ * Larry Smith
+ * Project #5
+ * CS 3100
+ * Map ADT: AVL Tree
+ * 11/19/2025
+ */
 #include "AVLTree.h"
 #include <string>
 #include <iostream>
-
 
 
 bool AVLTree::insert(const std::string &key, size_t value) {
@@ -10,7 +16,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
         // This checks if the key already exists and returns false if it does
         return false;
     }
-    AVLNode* newNode = new AVLNode(key, value); // create new node with key and value
+    AVLNode *newNode = new AVLNode(key, value); // create new node with key and value
     if (!root) {
         // if tree is empty
         root = newNode; // new node becomes root
@@ -30,7 +36,7 @@ void AVLTree::insertRecursive(AVLNode *&parent, AVLNode *&nodeToInsert) {
             parent->left = nodeToInsert; // insert as left child
             nodeToInsert->parent = parent; // set parent of inserted node for balancing
         } else {
-            insertRecursive(parent->left, nodeToInsert); // parent is now left child, recursive call
+            insertRecursive(parent->left, nodeToInsert); // recursive call to left subtree
         }
     } else {
         if (parent->right == nullptr) {
@@ -38,11 +44,11 @@ void AVLTree::insertRecursive(AVLNode *&parent, AVLNode *&nodeToInsert) {
             parent->right = nodeToInsert; // insert as right child
             nodeToInsert->parent = parent; // set parent of inserted node for balancing
         } else {
-            insertRecursive(parent->right, nodeToInsert); // parent is now right child, recursive call
+            insertRecursive(parent->right, nodeToInsert); // recursive call to right subtree
         }
     }
     // After insertion, update height and balance the tree
-    parent->height = parent->getHeight(); // update height of parent
+    updateHeight(parent);
     balanceNode(parent); // balance the parent node
 }
 
@@ -59,6 +65,7 @@ std::optional<size_t> AVLTree::get(const std::string &key) const {
 }
 
 size_t &AVLTree::operator[](const std::string &key) {
+    // overload operator to access value by key
     return getValue(root, key);
 }
 
@@ -75,20 +82,25 @@ std::vector<std::string> AVLTree::keys() const {
 }
 
 size_t AVLTree::size() const {
+    // return size of tree
     return treeSize;
 }
 
-size_t AVLTree::getHeight(){
+size_t AVLTree::getHeight() {
+    // return height of tree
     return getHeightHelper(root);
 }
 
 AVLTree::AVLTree(const AVLTree &other) : root(), treeSize(0) {
+    // copy constructor
     root = copyTree(other.root); // copy the tree from other tree and stores return pointer in root
     treeSize = other.treeSize; // copy size from other tree
 }
 
 void AVLTree::operator=(const AVLTree &other) {
-    if (this != &other) { // only copy if this and other are different
+    // assignment operator
+    if (this != &other) {
+        // only copy if this and other are different
         deleteTree(root); // delete current tree to avoid memory leaks
         root = copyTree(other.root); // copy the tree from other tree
         treeSize = other.treeSize; // copy size from other tree
@@ -96,12 +108,13 @@ void AVLTree::operator=(const AVLTree &other) {
 }
 
 AVLTree::~AVLTree() {
-    deleteTree(root);
+    // destructor
+    deleteTree(root); // delete the tree to free memory
     root = nullptr; // set root to null after deletion
     treeSize = 0; // set size to 0 after deletion
 }
 
-std::ostream& operator<<(std::ostream& os, const AVLTree& tree) {
+std::ostream &operator<<(std::ostream &os, const AVLTree &tree) {
     tree.printTree(tree.root, os, 0); // call printTree helper to print the tree
     return os;
 }
@@ -109,8 +122,16 @@ std::ostream& operator<<(std::ostream& os, const AVLTree& tree) {
 AVLTree::AVLTree() : root(), treeSize(0) {
     // constructor initializes root to null and size to 0
 }
-size_t AVLTree::AVLNode::numChildren() const {
 
+size_t AVLTree::AVLNode::numChildren() const {
+    size_t numChildren = 0;
+    if (left) {
+        numChildren++; // increment if left child exists
+    }
+    if (right) {
+        numChildren++; // increment if right child exists
+    }
+    return numChildren; // return total number of children
 }
 
 bool AVLTree::AVLNode::isLeaf() const {
@@ -118,6 +139,7 @@ bool AVLTree::AVLNode::isLeaf() const {
 }
 
 size_t AVLTree::AVLNode::getHeight() {
+    // return height
     return getHeightHelper(this);
 }
 
@@ -182,7 +204,20 @@ bool AVLTree::remove(AVLNode *&current, KeyType key) {
 }
 
 void AVLTree::balanceNode(AVLNode *&node) {
-
+    updateHeight(node); // update height of node
+    if (getBalance(node) == -2) {
+        if (getBalance(node->right) == 1) {
+            // double rotation case
+            rotateRight(node->right);
+        }
+        rotateLeft(node); // single rotation case
+    } else if (getBalance(node) == 2) {
+        if (getBalance(node->left) == -1) {
+            // double rotation case
+            rotateLeft(node->left);
+        }
+        rotateRight(node); // single rotation case
+    }
 }
 
 bool AVLTree::contains(AVLNode *current, KeyType key) const {
@@ -261,7 +296,8 @@ void AVLTree::allKeys(AVLNode *current, vector<string> &keys) const {
     allKeys(current->left, keys); // go left, recursive call
     allKeys(current->right, keys); // go right, recursive call
 }
-void AVLTree::deleteTree(AVLNode* current) {
+
+void AVLTree::deleteTree(AVLNode *current) {
     if (!current) {
         return; // base case: current is null
     }
@@ -269,95 +305,115 @@ void AVLTree::deleteTree(AVLNode* current) {
     deleteTree(current->right); // recursive call to delete right subtree
     delete current; // delete current node
 }
-size_t AVLTree::getHeightHelper(AVLNode* current) {
+
+size_t AVLTree::getHeightHelper(AVLNode *current) {
     if (!current) {
         return 0; // base case: current is null returns
     }
     size_t leftHeight = getHeightHelper(current->left); // get height of left subtree
     size_t rightHeight = getHeightHelper(current->right); // get height of right subtree
-    // size_t cannot be a negative number so need to check if leaf node and assign it with 0 or else a leaf node will return as 1
     if (current->isLeaf()) {
-        return 0; // leaf node has height 0
+        return 0; // return 0 for leaf nodes
     }
     return 1 + max(leftHeight, rightHeight); // return max height plus one for current node
 }
 
-AVLTree::AVLNode* AVLTree::copyTree(const AVLNode *current) {
+AVLTree::AVLNode *AVLTree::copyTree(const AVLNode *current) {
     if (!current) {
         return nullptr; // base case: current is null
     }
-    AVLNode* newNode = new AVLNode(current->key, current->value); // create new node with current key and value
+    AVLNode *newNode = new AVLNode(current->key, current->value); // create new node with current key and value
     newNode->height = current->height; // copy height
     newNode->balance = current->balance; // copy balance
 
-    newNode->left = copyTree(current->left);
-    newNode->right = copyTree(current->right);
+    newNode->left = copyTree(current->left); // recursively copy left subtree
+    newNode->right = copyTree(current->right); // recursively copy right subtree
 
     return newNode;
 }
-void AVLTree::printTree(AVLNode* current, std::ostream& os, int depth) const{
+
+void AVLTree::printTree(AVLNode *current, std::ostream &os, int depth) const {
     if (!current) {
         return;
     }
     printTree(current->right, os, depth + 1); // print right subtree first
     for (int i = 0; i < depth; i++) {
-        std::cout << "    "; // Indentation to make it look like a tree
+        // depth indicates level in tree and helps with indentation
+        std::cout << "    "; // Indentation to help it look more like a tree
     }
     std::cout << "{ " << current->key << ", " << current->value << " }" << std::endl;
     printTree(current->left, os, depth + 1); // print left subtree
 }
-bool AVLTree::setChild(AVLNode *parent, const std::string &whichChild, AVLNode *child) { // set child of parent
+
+bool AVLTree::setChild(AVLNode *parent, const std::string &whichChild, AVLNode *child) {
+    // set child of parent
     if (whichChild != "left" && whichChild != "right") {
         return false; // not a valid child
     }
-    if (whichChild == "left") { // set as left child of parent and update pointer
+    if (whichChild == "left") {
+        // set as left child of parent and update pointer
         parent->left = child;
-    } else { // set as right child of parent and update pointer
+    } else {
+        // set as right child of parent and update pointer
         parent->right = child;
     }
-    if (child != nullptr) { // set parent pointer of child if child is not null
+    if (child != nullptr) {
+        // set parent pointer of child if child is not null
         child->parent = parent;
     }
     return true;
 }
+
 bool AVLTree::replaceChild(AVLNode *parent, AVLNode *currentChild, AVLNode *newChild) {
-    if (parent->left == currentChild) { // replace left child
+    if (parent->left == currentChild) {
+        // replace left child
         return setChild(parent, "left", newChild);
-    } else if (parent->right == currentChild) { // replace right child
+    } else if (parent->right == currentChild) {
+        // replace right child
         return setChild(parent, "right", newChild);
     }
     return false;
 }
+
 void AVLTree::updateHeight(AVLNode *current) {
+    // update height of current node
     if (!current) {
         return;
     }
-    int leftHeight = -1;
+    int leftHeight = -1; // initialize left height
     if (current->left != nullptr) {
-        leftHeight = current->left->height;
+        // if left child exists
+        leftHeight = current->left->height; // set left height
     }
-    int rightHeight = -1;
+    int rightHeight = -1; // initialize right height
     if (current->right != nullptr) {
-        rightHeight = current->right->height;
+        // if right child exists
+        rightHeight = current->right->height; // set right height
     }
-    current->height = 1 + std::max(leftHeight, rightHeight);
+    current->height = 1 + std::max(leftHeight, rightHeight); // update height of current node
 }
+
 int AVLTree::getBalance(AVLNode *current) {
-    int leftHeight = -1;
+    // get balance factor of current node
+    int leftHeight = -1; // initialize left height
     if (current->left != nullptr) {
-        leftHeight = current->left->height;
+        // if left child exists
+        leftHeight = current->left->height; // set left height
     }
-    int rightHeight = -1;
+    int rightHeight = -1; // initialize right height
     if (current->right != nullptr) {
-        rightHeight = current->right->height;
+        // if right child exists
+        rightHeight = current->right->height; // set right height
     }
-    return leftHeight - rightHeight;
+    return leftHeight - rightHeight; // return balance factor
 }
-AVLTree::AVLNode* AVLTree::rotateRight(AVLNode* current) {
-    AVLNode* temp = current->left->right;
+
+AVLTree::AVLNode *AVLTree::rotateRight(AVLNode *current) {
+    AVLNode *temp = current->left->right;
     if (current->parent != nullptr) {
         replaceChild(current->parent, current, current->left);
-    } else { // current is root
+    } else {
+        // current is root
         root = current->left;
         root->parent = nullptr;
     }
@@ -369,19 +425,21 @@ AVLTree::AVLNode* AVLTree::rotateRight(AVLNode* current) {
 
     return current->parent; // return new root of rotated subtree
 }
-AVLTree::AVLNode* AVLTree::rotateLeft(AVLNode* current) {
-    AVLNode* temp = current->right->left;
+
+AVLTree::AVLNode *AVLTree::rotateLeft(AVLNode *current) {
+    AVLNode *temp = current->right->left;
     if (current->parent != nullptr) {
         replaceChild(current->parent, current, current->right);
-    } else { // current is root
+    } else {
+        // current is root
         root = current->right;
         root->parent = nullptr;
     }
     setChild(current->right, "left", current); // set current as left child of its right child
     setChild(current, "right", temp); // attach temp as right child of current
 
-    updateHeight(current);
-    updateHeight(current->parent);
+    updateHeight(current); // update height of current
+    updateHeight(current->parent); // update height of parent
 
     return current->parent; // return new root of rotated subtree
 }

@@ -93,6 +93,8 @@ public:
     static size_t getHeightHelper(AVLNode* current);
 
     AVLNode* copyTree(const AVLNode *current);
+
+    void printTree(AVLNode* current, std::ostream& os, int depth) const;
 };
 
 #endif //AVLTREE_H

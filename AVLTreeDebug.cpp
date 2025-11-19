@@ -12,7 +12,26 @@ using namespace std;
 
 
 int main() {
-    // AVLTree tree;
+    AVLTree tree;
+    tree.insert("M", 'M');
+    tree.insert("B", 'B');
+    tree.insert("Q", 'Q');
+    tree.insert("Z", 'Z');
+    tree.insert("L", 'L');
+    tree.insert("A", 'A');
+    tree.insert("C", 'C');
+    cout << tree.size() << endl;
+    cout << tree << endl;
+    cout << tree.getHeight() << endl;
+
+    vector<string> keys = tree.findRange("B", "Q");
+    for (const string& key : keys) {
+        cout << key << " ";
+    }
+
+    tree.remove("B");
+    cout << tree << endl;
+    cout << "hmm" << endl;
     // bool insertResult;
     // insertResult = tree.insert("F", 'F');
     // insertResult = tree.insert("F", 'F'); // false, no duplicates allowed

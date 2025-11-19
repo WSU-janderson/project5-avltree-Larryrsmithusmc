@@ -1,5 +1,7 @@
 #include "AVLTree.h"
 #include <string>
+#include <iostream>
+
 
 
 bool AVLTree::insert(const std::string &key, size_t value) {
@@ -100,7 +102,8 @@ AVLTree::~AVLTree() {
 }
 
 std::ostream& operator<<(std::ostream& os, const AVLTree& tree) {
-
+    tree.printTree(tree.root, os, 0); // call printTree helper to print the tree
+    return os;
 }
 
 AVLTree::AVLTree() : root(), treeSize(0) {
@@ -292,3 +295,16 @@ AVLTree::AVLNode* AVLTree::copyTree(const AVLNode *current) {
 
     return newNode;
 }
+void AVLTree::printTree(AVLNode* current, std::ostream& os, int depth) const{
+    if (!current) {
+        return;
+    }
+    printTree(current->right, os, depth + 1); // print right subtree first
+    for (int i = 0; i < depth; i++) {
+        std::cout << "    "; // Indentation to make it look like a tree
+    }
+    std::cout << "{ " << current->key << ", " << current->value << " }" << std::endl;
+    printTree(current->left, os, depth + 1); // print left subtree
+}
+
+

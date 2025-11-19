@@ -47,7 +47,7 @@ protected:
         AVLNode* right;
         AVLNode* parent;
 
-        AVLNode(KeyType  key, ValueType value) : key(std::move(key)), value(value), height(1), balance(0), left(nullptr), right(nullptr), parent(nullptr) {
+        AVLNode(KeyType  key, ValueType value) : key(std::move(key)), value(value), height(0), balance(0), left(nullptr), right(nullptr), parent(nullptr) {
         }
 
         // 0, 1 or 2
@@ -95,6 +95,10 @@ public:
     AVLNode* copyTree(const AVLNode *current);
 
     void printTree(AVLNode* current, std::ostream& os, int depth) const;
+
+    bool setChild(AVLNode *parent, const std::string &whichChild, AVLNode *child);
+
+    bool replaceChild(AVLNode *parent, AVLNode *currentChild, AVLNode *newChild);
 };
 
 #endif //AVLTREE_H

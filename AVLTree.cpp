@@ -306,5 +306,25 @@ void AVLTree::printTree(AVLNode* current, std::ostream& os, int depth) const{
     std::cout << "{ " << current->key << ", " << current->value << " }" << std::endl;
     printTree(current->left, os, depth + 1); // print left subtree
 }
-
-
+bool AVLTree::setChild(AVLNode *parent, const std::string &whichChild, AVLNode *child) { // set child of parent
+    if (whichChild != "left" && whichChild != "right") {
+        return false; // not a valid child
+    }
+    if (whichChild == "left") { // set as left child of parent and update pointer
+        parent->left = child;
+    } else { // set as right child of parent and update pointer
+        parent->right = child;
+    }
+    if (child != nullptr) { // set parent pointer of child if child is not null
+        child->parent = parent;
+    }
+    return true;
+}
+bool AVLTree::replaceChild(AVLNode *parent, AVLNode *currentChild, AVLNode *newChild) {
+    if (parent->left == currentChild) { // replace left child
+        return setChild(parent, "left", newChild);
+    } else if (parent->right == currentChild) { // replace right child
+        return setChild(parent, "right", newChild);
+    }
+    return false;
+}

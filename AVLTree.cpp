@@ -8,7 +8,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
         // This checks if the key already exists and returns false if it does
         return false;
     }
-    AVLNode *newNode = new AVLNode(key, value); // create new node with key and value
+    AVLNode* newNode = new AVLNode(key, value); // create new node with key and value
     if (!root) {
         // if tree is empty
         root = newNode; // new node becomes root
@@ -76,10 +76,13 @@ size_t AVLTree::size() const {
     return treeSize;
 }
 
-size_t AVLTree::getHeight() const {
+size_t AVLTree::getHeight(){
+    return getHeightHelper(root);
 }
 
 AVLTree::AVLTree(const AVLTree &other) {
+    root = copyTree(other.root); // copy the tree from other tree and stores return pointer in root
+    treeSize = other.treeSize; // copy size from other tree
 }
 
 void AVLTree::operator=(const AVLTree &other) {
@@ -98,7 +101,8 @@ bool AVLTree::AVLNode::isLeaf() const {
     return left == nullptr && right == nullptr; // A node is a leaf if left and right children are null
 }
 
-size_t AVLTree::AVLNode::getHeight() const {
+size_t AVLTree::AVLNode::getHeight() {
+    return getHeightHelper(this);
 }
 
 bool AVLTree::removeNode(AVLNode *&current) {
@@ -248,28 +252,29 @@ void AVLTree::deleteTree(AVLNode* current) {
     deleteTree(current->right); // recursive call to delete right subtree
     delete current; // delete current node
 }
-
-// Replaced code parts
-/*AVLNode* current = root; // pointer starting at the root
-    AVLNode* parent = nullptr; // pointer to keep track of the parent node
-
-    while (current) {
-        parent = current; // update parent to current before moving down the tree
-        if (key < current->key) { // of key is less than current key, go left
-            current = current->left; // move left, update current then continue
-        } else { // else go right
-            current = current->right; // move right, update current then continue
-        }
+size_t AVLTree::getHeightHelper(AVLNode* current) {
+    if (!current) {
+        return 0; // base case: current is null returns
     }
-    // Now current is null and parent is the node to attach the new node to at this point
-    newNode->parent = parent; // newNode's parent is the found parent
-    if (key < parent->key) { // if key is less than parent's key
-        parent->left = newNode; // attach new node as left child
-    } else {
-        parent->right = newNode; // attach new node as right child
+    size_t leftHeight = getHeightHelper(current->left); // get height of left subtree
+    size_t rightHeight = getHeightHelper(current->right); // get height of right subtree
+    // size_t cannot be a negative number so need to check if leaf node and assign it with 0 or else a leaf node will return as 1
+    if (current->isLeaf()) {
+        return 0; // leaf node has height 0
     }
-    AVLNode* needsBalanced = parent; // start balancing from the parent of the new node
-    while (needsBalanced) { // will balance as long as needsBalanced is not null when null ends
-        balanceNode(needsBalanced); // balance the current node
-        needsBalanced = needsBalanced->parent; // Move to next parent for balancing if no parent null
-    }*/
+    return 1 + max(leftHeight, rightHeight); // return max height plus one for current node
+}
+
+AVLTree::AVLNode* AVLTree::copyTree(const AVLNode *current) {
+    if (!current) {
+        return nullptr; // base case: current is null
+    }
+    AVLNode* newNode = new AVLNode(current->key, current->value); // create new node with current key and value
+    newNode->height = current->height; // copy height
+    newNode->balance = current->balance; // copy balance
+
+    newNode->left = copyTree(current->left);
+    newNode->right = copyTree(current->right);
+
+    return newNode;
+}

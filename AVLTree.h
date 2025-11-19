@@ -6,6 +6,7 @@
 #define AVLTREE_H
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -24,7 +25,7 @@ public:
     vector<std::string> findRange(const std::string& lowKey, const std::string& highKey);
     std::vector<std::string> keys() const;
     size_t size() const;
-    size_t getHeight() const;
+    size_t getHeight();
     AVLTree(const AVLTree& other);
     ~AVLTree();
     void operator=(const AVLTree& other);
@@ -39,18 +40,22 @@ protected:
         ValueType value;
         size_t height;
 
+        int balance;
+
+
         AVLNode* left;
         AVLNode* right;
         AVLNode* parent;
 
-
+        AVLNode(KeyType  key, ValueType& value) : key(std::move(key)), value(value), height(1), balance(0), left(nullptr), right(nullptr), parent(nullptr) {
+        }
 
         // 0, 1 or 2
         size_t numChildren() const;
         // true or false
         bool isLeaf() const;
-        // number of hops to deepest leaf node
-        size_t getHeight() const;
+
+        size_t getHeight();
 
     };
 
@@ -84,6 +89,10 @@ public:
     void allKeys(AVLNode* current, vector<string>& keys) const;
 
     void deleteTree(AVLNode* current);
+
+    static size_t getHeightHelper(AVLNode* current);
+
+    AVLNode* copyTree(const AVLNode *current);
 };
 
 #endif //AVLTREE_H

@@ -328,3 +328,60 @@ bool AVLTree::replaceChild(AVLNode *parent, AVLNode *currentChild, AVLNode *newC
     }
     return false;
 }
+void AVLTree::updateHeight(AVLNode *current) {
+    if (!current) {
+        return;
+    }
+    int leftHeight = -1;
+    if (current->left != nullptr) {
+        leftHeight = current->left->height;
+    }
+    int rightHeight = -1;
+    if (current->right != nullptr) {
+        rightHeight = current->right->height;
+    }
+    current->height = 1 + std::max(leftHeight, rightHeight);
+}
+int AVLTree::getBalance(AVLNode *current) {
+    int leftHeight = -1;
+    if (current->left != nullptr) {
+        leftHeight = current->left->height;
+    }
+    int rightHeight = -1;
+    if (current->right != nullptr) {
+        rightHeight = current->right->height;
+    }
+    return leftHeight - rightHeight;
+}
+AVLTree::AVLNode* AVLTree::rotateRight(AVLNode* current) {
+    AVLNode* temp = current->left->right;
+    if (current->parent != nullptr) {
+        replaceChild(current->parent, current, current->left);
+    } else { // current is root
+        root = current->left;
+        root->parent = nullptr;
+    }
+    setChild(current->left, "right", current); // set current as right child of its left child
+    setChild(current, "left", temp); // attach temp as left child of current
+
+    updateHeight(current);
+    updateHeight(current->parent);
+
+    return current->parent; // return new root of rotated subtree
+}
+AVLTree::AVLNode* AVLTree::rotateLeft(AVLNode* current) {
+    AVLNode* temp = current->right->left;
+    if (current->parent != nullptr) {
+        replaceChild(current->parent, current, current->right);
+    } else { // current is root
+        root = current->right;
+        root->parent = nullptr;
+    }
+    setChild(current->right, "left", current); // set current as left child of its right child
+    setChild(current, "right", temp); // attach temp as right child of current
+
+    updateHeight(current);
+    updateHeight(current->parent);
+
+    return current->parent; // return new root of rotated subtree
+}

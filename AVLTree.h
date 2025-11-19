@@ -99,6 +99,14 @@ public:
     bool setChild(AVLNode *parent, const std::string &whichChild, AVLNode *child);
 
     bool replaceChild(AVLNode *parent, AVLNode *currentChild, AVLNode *newChild);
+
+    void updateHeight(AVLNode *current);
+
+    int getBalance(AVLNode *current);
+
+    AVLNode* rotateRight(AVLNode* current);
+
+    AVLNode* rotateLeft(AVLNode* current);
 };
 
 #endif //AVLTREE_H

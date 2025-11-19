@@ -100,14 +100,14 @@ AVLTree::~AVLTree() {
 }
 
 std::ostream& operator<<(std::ostream& os, const AVLTree& tree) {
-    // todo
+
 }
 
 AVLTree::AVLTree() : root(), treeSize(0) {
     // constructor initializes root to null and size to 0
 }
 size_t AVLTree::AVLNode::numChildren() const {
-    // todo
+
 }
 
 bool AVLTree::AVLNode::isLeaf() const {
@@ -179,7 +179,7 @@ bool AVLTree::remove(AVLNode *&current, KeyType key) {
 }
 
 void AVLTree::balanceNode(AVLNode *&node) {
-    // todo
+
 }
 
 bool AVLTree::contains(AVLNode *current, KeyType key) const {

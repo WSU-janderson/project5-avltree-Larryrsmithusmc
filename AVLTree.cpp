@@ -80,21 +80,34 @@ size_t AVLTree::getHeight(){
     return getHeightHelper(root);
 }
 
-AVLTree::AVLTree(const AVLTree &other) {
+AVLTree::AVLTree(const AVLTree &other) : root(), treeSize(0) {
     root = copyTree(other.root); // copy the tree from other tree and stores return pointer in root
     treeSize = other.treeSize; // copy size from other tree
 }
 
 void AVLTree::operator=(const AVLTree &other) {
+    if (this != &other) { // only copy if this and other are different
+        deleteTree(root); // delete current tree to avoid memory leaks
+        root = copyTree(other.root); // copy the tree from other tree
+        treeSize = other.treeSize; // copy size from other tree
+    }
 }
 
 AVLTree::~AVLTree() {
     deleteTree(root);
+    root = nullptr; // set root to null after deletion
+    treeSize = 0; // set size to 0 after deletion
 }
+
+std::ostream& operator<<(std::ostream& os, const AVLTree& tree) {
+    // todo
+}
+
 AVLTree::AVLTree() : root(), treeSize(0) {
     // constructor initializes root to null and size to 0
 }
 size_t AVLTree::AVLNode::numChildren() const {
+    // todo
 }
 
 bool AVLTree::AVLNode::isLeaf() const {
@@ -166,6 +179,7 @@ bool AVLTree::remove(AVLNode *&current, KeyType key) {
 }
 
 void AVLTree::balanceNode(AVLNode *&node) {
+    // todo
 }
 
 bool AVLTree::contains(AVLNode *current, KeyType key) const {
